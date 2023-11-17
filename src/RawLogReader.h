@@ -20,7 +20,7 @@ class RawLogReader
 {
     public:
         RawLogReader(Bytef *& decompressionBuffer,
-                     IplImage *& deCompImage,
+                     cv::Mat *& deCompImage,
                      std::string file,
                      bool flipColors);
 
@@ -33,7 +33,7 @@ class RawLogReader
         bool hasMore();
 
         Bytef *& decompressionBuffer;
-        IplImage *& deCompImage;
+        cv::Mat *& deCompImage;
         unsigned char * depthReadBuffer;
         unsigned char * imageReadBuffer;
         int64_t timestamp;

@@ -27,7 +27,7 @@ int parse_argument (int argc, char** argv, const char* str, int &val)
 int parse_argument (int argc, char** argv, const char* str, std::string &val)
 {
     int index = find_argument (argc, argv, str) + 1;
-    
+
     if (index > 0 && index < argc )
       val = argv[index];
 
@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
     Resolution::getInstance(width, height);
 
     Bytef * decompressionBuffer = new Bytef[Resolution::getInstance().numPixels() * 2];
-    IplImage * deCompImage = 0;
+    cv::Mat * deCompImage = 0;
 
     std::string logFile;
     assert(parse_argument(argc, argv, "-l", logFile) > 0 && "Please provide a log file");
@@ -57,25 +57,25 @@ int main(int argc, char * argv[])
 
     cv::Mat1b tmp(height, width);
     cv::Mat3b depthImg(height, width);
-    
+
     while(logReader.hasMore())
     {
         logReader.getNext();
-        
-        cv::Mat3b rgbImg(height, width, (cv::Vec<unsigned char, 3> *)logReader.deCompImage->imageData);
+
+        cv::Mat3b rgbImg(height, width, (cv::Vec<unsigned char, 3> *)logReader.deCompImage->data);
 
         cv::Mat1w depth(height, width, (unsigned short *)&decompressionBuffer[0]);
-        
+
         cv::normalize(depth, tmp, 0, 255, cv::NORM_MINMAX, 0);
 
-        cv::cvtColor(tmp, depthImg, CV_GRAY2RGB);
+        cv::cvtColor(tmp, depthImg, cv::COLOR_GRAY2RGB);
 
         cv::imshow("RGB", rgbImg);
-        
+
         cv::imshow("Depth", depthImg);
-        
+
         char key = cv::waitKey(1);
-        
+
         if(key == 'q')
             break;
         else if(key == ' ')
@@ -88,7 +88,7 @@ int main(int argc, char * argv[])
 
     if(deCompImage)
     {
-        cvReleaseImage(&deCompImage);
+        delete deCompImage;
     }
 
     return 0;
